@@ -1,0 +1,26 @@
+{
+  "name": "email-service-demo",
+  "version": "1.0.0",
+  "description": "email API service demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benzhanghf/emailServices.git"
+  },
+  "keywords": [
+    "demo",
+    "email",
+    "RESTful",
+    "service",
+    "API"
+  ],
+  "author": "haifeng zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/benzhanghf/emailServices/issues"
+  },
+  "homepage": "https://github.com/benzhanghf/emailServices#readme"
+}
