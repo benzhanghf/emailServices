@@ -4,7 +4,9 @@
   "description": "email API service demo",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "tslint --fix -c tslint.json 'src/**/*{.ts,.tsx}'",
+    "start": "sls offline start",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -17,10 +19,26 @@
     "service",
     "API"
   ],
-  "author": "haifeng zhang",
+  "author": "haifeng zhang<benzhanghf@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/benzhanghf/emailServices/issues"
   },
-  "homepage": "https://github.com/benzhanghf/emailServices#readme"
+  "homepage": "https://github.com/benzhanghf/emailServices#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.36",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.12",
+    "jest": "^24.9.0",
+    "serverless-offline": "^5.12.0",
+    "serverless-webpack": "^5.3.1",
+    "ts-jest": "^24.2.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "ts-loader": "^6.2.1"
+  }
 }

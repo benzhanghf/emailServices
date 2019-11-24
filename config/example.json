@@ -1,0 +1,6 @@
+{
+    "API_KEY": "xxxxx",
+    "SENDGRID_APIKEY": "xxxxx",
+    "AWS_SES_USERNAME": "xxxxx",
+    "AWS_SES_PASSWORD": "xxxxx"
+}

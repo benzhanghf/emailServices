@@ -2,5 +2,9 @@
 node_modules
 jspm_packages
 
+# output folder
+/dist/
+
 # Serverless directories
 .serverless
+.webpack
