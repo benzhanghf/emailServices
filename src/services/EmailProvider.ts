@@ -1,3 +1,4 @@
+import AWS from 'aws-sdk';
 import axios from 'axios';
 
 export class EmailProvider {
@@ -7,7 +8,7 @@ export class EmailProvider {
     public static PROVIDER_MAILGUN: string = 'mailgun';
 
     public errMessages: any[] = [];
-    public defaultFromEmail: string = 'no-reply@example.com';
+    public defaultFromEmail: string = 'no-reply@haifengzhang.me';
 
     private SendGridAPIKey?: string;
     private SESUsername?: string;
@@ -127,21 +128,39 @@ export class EmailProvider {
         if (!valid) {
             return this.getErrorResponse();
         }
-        // try sendGrid service first
-        try {
-            const resp = await this.sendBySendGrid(data);
-            return resp;
-        } catch (err) {
-            console.log(err);
-            this.errMessages.push('SendGrid error: ' + JSON.stringify(err.message));
-        }
-        // fallback to ses
-        try {
-            const resp = await this.sendBySES(data);
-            return resp;
-        } catch (err) {
-            console.log(err);
-            this.errMessages.push('AWS SES error: ' + JSON.stringify(err.message));
+        // for test reason to test fallback method choose which service call first
+        if (data.test && data.test === EmailProvider.PROVIDER_SENDGRID) {
+            // sendgrid first and ses fallback
+            try {
+                const resp = await this.sendBySendGrid(data);
+                return resp;
+            } catch (err) {
+                console.log(err);
+                this.errMessages.push(err.message);
+            }
+            try {
+                const resp = await this.sendBySES(data);
+                return resp;
+            } catch (err) {
+                console.log(err);
+                this.errMessages.push(err.message);
+            }
+        } else {
+            // ses first and sendgrid fallback
+            try {
+                const resp = await this.sendBySES(data);
+                return resp;
+            } catch (err) {
+                console.log(err);
+                this.errMessages.push(err.message);
+            }
+            try {
+                const resp = await this.sendBySendGrid(data);
+                return resp;
+            } catch (err) {
+                console.log(err);
+                this.errMessages.push(err.message);
+            }
         }
         return {errors: this.errMessages};
     }
@@ -162,10 +181,9 @@ export class EmailProvider {
         ).then((response) => {
             return response;
         }).catch((err) => {
-            console.log(err.response.data);
             throw new Error(JSON.stringify(err.response.data));
         });
-        return {success: true, provider: 'SendGrid', result: resp.data};
+        return {success: true, provider: 'SendGrid', response: resp.data, debug: this.errMessages};
     }
 
     public prepareSendGridData(data)
@@ -210,8 +228,34 @@ export class EmailProvider {
 
     public async sendBySES(data)
     {
-        throw new Error('Not implemented yet as SES will not work until I request a public domain');
-        return {success: true, provider: 'AWS SES', result: ''};
+        AWS.config.update({region: 'ap-southeast-2'});
+        const params = {
+            Destination: {
+                ToAddresses: data.to,
+                CcAddresses: data.cc,
+                BccAddresses: data.bcc
+            },
+            Message: {
+                Body: {
+                    Text: {
+                        Charset: 'UTF-8',
+                        Data: data.content
+                    }
+                },
+                Subject: {
+                    Charset: 'UTF-8',
+                    Data: data.subject
+                }
+            },
+            Source: this.defaultFromEmail
+        };
+        const sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
+        const resp = await sendPromise.then((result) => {
+            return result.MessageId;
+        }).catch((err) => {
+            throw new Error(err.message);
+        });
+        return {success: true, provider: 'AWS SES', response: resp, debug: this.errMessages};
     }
 
     public getErrorResponse()

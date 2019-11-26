@@ -34,13 +34,38 @@ http://localhost:4000/email/send
 Body example: (cc and bcc field are optional)
 ```
 {
-	"to": ["ben_zhanghf@hotmail.com"],
-	"cc": ["benzhanghf@gmail.com"],
-	"bcc": ["ben@example.com"],
+	"to": ["xxxxx@hotmail.com"],
+	"cc": ["aaaaa@gmail.com"],
+	"bcc": ["info@haifengzhang.me"],
 	"subject": "This is a test email",
 	"content": "This is me testing. Hello World."
 }
 ```
+For testing fallback and without fallback you could add another test field like "ses" or "sendgrid" to choose which one to send email first and the other one will be the fallback provider. Default sequence is SES first then fallback to sendgrid, as SES will failed without increase limit in AWS contact, but sendgrid works without human approval.
+```
+{
+	"to": ["xxxxx@hotmail.com"],
+	"cc": ["bbbbb@gmail.com"],
+	"bcc": ["info@haifengzhang.me"],
+	"subject": "This is a test email",
+	"content": "This is me testing. Hello World.",
+	"test": "sendgrid"
+}
+```
+
+## example response
+when fallback there will be debug message showing like the following:
+```
+{
+    "success": true,
+    "provider": "SendGrid",
+    "response": "",
+    "debug": [
+        "Email address is not verified. The following identities failed the check in region AP-SOUTHEAST-2: bbbbb@gmail.com, xxxxx@hotmail.com"
+    ]
+}
+```
+
 
 ## Production testing
 endpoints:
